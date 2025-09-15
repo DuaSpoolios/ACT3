@@ -1,53 +1,43 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const PetApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PetApp extends StatelessWidget {
+  const PetApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: const Color(0xFFE6E6FA),
+        primaryColor: const Color(0xFFE6E6FA), // lavender
         scaffoldBackgroundColor: Colors.white,
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFE6E6FA), 
-            foregroundColor: Colors.purple,  
-          ),
-        ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFE6E6FA),     
-          foregroundColor: Colors.purple,       
+          backgroundColor: Color(0xFFE6E6FA),
+          foregroundColor: Colors.purple,
         ),
       ),
-      home: DefaultTabController(length: 4, child: const DigitalPetHome()),
+      home: const PetTabs(),
     );
   }
 }
 
-class DigitalPetHome extends StatefulWidget {
-  const DigitalPetHome({super.key});
+class PetTabs extends StatefulWidget {
+  const PetTabs({super.key});
+
   @override
-  State<DigitalPetHome> createState() => _DigitalPetHomeState();
+  State<PetTabs> createState() => _PetTabsState();
 }
 
-class _DigitalPetHomeState extends State<DigitalPetHome>
+class _PetTabsState extends State<PetTabs>
     with SingleTickerProviderStateMixin, RestorationMixin {
   late TabController _tabController;
   final RestorableInt tabIndex = RestorableInt(0);
 
-  //Pet stats
-  int hunger = 50;   
-  int happiness = 50; 
-  int energy = 50;    
-
   @override
-  String get restorationId => 'digital_pet_home';
+  String get restorationId => 'pet_tabs';
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
@@ -73,25 +63,50 @@ class _DigitalPetHomeState extends State<DigitalPetHome>
     super.dispose();
   }
 
-  int _clamp(int v) => v.clamp(0, 100);
-  void _feed() => setState(() => hunger = _clamp(hunger - 20));
-  void _play() => setState(() {
-        happiness = _clamp(happiness + 20);
-        energy = _clamp(energy - 10);
-      });
-  void _sleep()=> setState(() {
-        energy= _clamp(energy + 25);
-        hunger= _clamp(hunger + 10);
-      });
+  // ---- Pet Images ----
+  final String dogImg =
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80';
+  final String catImg =
+      'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=800&q=80';
+  final String hamsterImg =
+      'https://images.pexels.com/photos/209096/pexels-photo-209096.jpeg?auto=compress&cs=tinysrgb&w=800';
+  final String snakeImg =
+      'https://images.pexels.com/photos/45246/green-tree-python-python-tree-python-green-45246.jpeg?auto=compress&cs=tinysrgb&w=800';
+  // ---------------------
+
+  Widget _petImage(String url) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.network(
+        url,
+        width: 300,
+        height: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => Container(
+          width: 300,
+          height: 200,
+          color: const Color(0xFFEDE7F6),
+          alignment: Alignment.center,
+          child: const Text(
+            'Image failed to load',
+            style: TextStyle(color: Colors.purple),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tabs = ['Feed', 'Play', 'Sleep', 'Stats'];
+    final tabs = ['Dog', 'Cat', 'Penguin', 'Snake'];
+    final images = [dogImg, catImg, hamsterImg, snakeImg];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Digital Pet'),
+        title: const Text('Pet Gallery'),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.purple,         
+          labelColor: Colors.purple,
           unselectedLabelColor: Colors.grey,
           indicatorColor: Colors.purple,
           tabs: [for (final t in tabs) Tab(text: t)],
@@ -100,84 +115,17 @@ class _DigitalPetHomeState extends State<DigitalPetHome>
       body: TabBarView(
         controller: _tabController,
         children: [
-        //Feed
-          Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.restaurant),
-              label: const Text("Feed Pet"),
-              onPressed: () {
-                _feed();
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("Pet fed!")));
-              },
-            ),
-          ),
-          // Play
-          Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.sports_esports),
-              label: const Text("Play with Pet"),
-              onPressed: () {
-                _play();
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Your pet is happier!")));
-              },
-            ),
-          ),
-//Sleep
-          Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.bedtime),
-              label: const Text("Put Pet to Sleep"),
-              onPressed: () {
-                _sleep();
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Your pet had a nice nap!")));
-              },
-            ),
-          ),
-//Stats
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    'https://cdn.shopify.com/s/files/1/2668/1922/files/british-shorthair-1.jpg?v=1689089942',
-                    width: 250,
-                    height: 180,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Hunger:    $hunger",
-                  style: const TextStyle(fontSize: 20, color: Colors.purple),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Happiness: $happiness",
-                  style: const TextStyle(fontSize: 20, color: Colors.purple),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Energy:    $energy",
-                  style: const TextStyle(fontSize: 20, color: Colors.purple),
-                ),
-              ],
-            ),
-          ),
+          for (final img in images)
+            Center(child: _petImage(img)),
         ],
       ),
       bottomNavigationBar: const BottomAppBar(
-        color: Color(0xFFE6E6FA), 
+        color: Color(0xFFE6E6FA),
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(
-            "Digital Pet – Activity 3",
-            style: TextStyle(color: Colors.purple, fontSize: 16), 
+            "Pet App – Dog • Cat • Penguin • Snake",
+            style: TextStyle(color: Colors.purple, fontSize: 16),
             textAlign: TextAlign.center,
           ),
         ),
