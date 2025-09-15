@@ -137,30 +137,40 @@ class _DigitalPetHomeState extends State<DigitalPetHome>
             ),
           ),
           // Stats
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Hunger:    $hunger",
-                  style: const TextStyle(fontSize: 20),
+        Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+            // 🐱 --- Add a cat picture here ---
+            ClipRRect(
+                borderRadius: BorderRadius.circular(12), // rounded corners (optional)
+                child: Image.network(
+                'https://cdn.shopify.com/s/files/1/2668/1922/files/british-shorthair-1.jpg?v=1689089942',
+                width: 250,        // adjust size as you like
+                height: 180,
+                fit: BoxFit.cover, // crop/scale to fill
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  "Happiness: $happiness",
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Energy:    $energy",
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ],
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 20),
+
+            Text(
+                "Hunger:    $hunger",
+                style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 8),
+            Text(
+                "Happiness: $happiness",
+                style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 8),
+            Text(
+                "Energy:    $energy",
+                style: const TextStyle(fontSize: 20),
+            ),
+            ],
+        ),
+        ),
       bottomNavigationBar: const BottomAppBar(
         color: Colors.purple,
         child: Padding(
